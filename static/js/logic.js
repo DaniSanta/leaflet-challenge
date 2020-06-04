@@ -6,18 +6,18 @@ function buildUrl(){
     //     domain = "earthquake.usgs.gov",
     //     endpoint = "/fdsnws/event/1/query",
     //     format = "geojson",
-    //     starttime = "2020-06-01",
-    //     endtime = "2020-06-02",
-    //     maxLon = -69.52148437,
-    //     minLon = -123.83789062,
-    //     maxLat = 48.74894534,
-    //     minLat = 25.16517337;
+    //     starttime = "2020-05-01",
+    //     endtime = "2020-07-07",
+    //     maxLon = -169.5,
+    //     minLon = -163.8,
+    //     maxLat = 68.7,
+    //     minLat = 45.1;
 
     // return `https://${domain}${endpoint}?format=${format}&starttime=${starttime}&endtime=${endtime}&maxlongitude=${maxLon}&minlongitude=${minLon}&maxlatitude=${maxLat}&minlatitude=${minLat}`;
     
-    // API URL of past 7 significant earthquakes
+    // API URL of Significant Earthquakes for the past 7 Days
     //------------------------------------------
-    return "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+    return "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson";
 } 
 
 // Function to get the api from https://earthquake.usgs.gov/
@@ -30,18 +30,6 @@ function buildUrl(){
 
 function createFeatures(earthquakeData) {
 
-    // Define a function we want to run once for each feature in the features array
-    // Give each feature a popup describing the place and time of the earthquake
-
-    // function onEachFeature(feature, layer) {
-    //     L.circle(feature.properties.place, {
-    //         fillOpacity: 0.75,
-    //         color: "white",
-    //         fillColor: "orange",
-    //         radius: feature.properties.mag * 1000
-    //     }).bindPopup("<h3>" + feature.properties.place +
-    //     "</h3><hr><p>" + feature.properties.mag + "</p>");
-    // }
 
     function onEachFeature(feature, layer) {
         layer.bindPopup("<h3>" + feature.properties.place +
@@ -59,6 +47,7 @@ function createFeatures(earthquakeData) {
     createMap(earthquakes);
 }
 
+function createMap(earthquakes) {
     // Adding title layer
     const darkmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
@@ -76,7 +65,7 @@ function createFeatures(earthquakeData) {
     
       // Define a baseMaps object to hold our base layers
     const baseMaps = {
-            "Surface Map": streetmap,
+            "Light Map": lightmap,
             "Dark Map": darkmap
     };
 
@@ -89,7 +78,7 @@ function createFeatures(earthquakeData) {
     const myMap = L.map("map", {
             center: [37.09, -95.71],
             zoom: 5,
-            layers: [streetmap, earthquakes]
+            layers: [darkmap, earthquakes]
     });
 
     // Create a layer control
@@ -99,12 +88,4 @@ function createFeatures(earthquakeData) {
             collapsed: false
     }).addTo(myMap);
 
-(async function(){
-    // const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-    const url = buildUrl();
-    const data = await d3.json(url);
-
-    // Once we get a response, send the data.features object to the createFeatures function
-    createFeatures(data.features);
-})()
-
+};
